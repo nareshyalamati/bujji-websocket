@@ -8,10 +8,19 @@ const server = new WebSocket.Server({ port: PORT }, () => {
 server.on("connection", (ws) => {
     console.log("🎉 Client connected");
 
-    ws.on("message", (msg) => {
-        console.log("📨 Received:", msg);
-        ws.send(`Server Echo: ${msg}`);
-    });
+    let i = 1;
+    const intervalId = setInterval(() => {
+        if (i <= 100) {
+            ws.send(`Number: ${i}`);
+            i++;
+        } else {
+            clearInterval(intervalId);
+            ws.send("✅ Done sending numbers 1 to 100");
+        }
+    }, 3000); // 3 seconds
 
-    ws.on("close", () => console.log("❌ Client disconnected"));
+    ws.on("close", () => {
+        console.log("❌ Client disconnected");
+        clearInterval(intervalId);
+    });
 });
